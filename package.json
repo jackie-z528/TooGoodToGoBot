@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --build",
     "test": "jest"
   },
   "repository": {
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/jackie-z528/TooGoodToGoBot#readme",
   "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
     "eslint": "^8.35.0",
     "jest": "^29.4.3",
     "prettier": "^2.8.4",
