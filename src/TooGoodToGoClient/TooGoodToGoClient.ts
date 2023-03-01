@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { config } from "../../Config/Config";
 
 const BASE_AUTH_URL = "/auth/v3";
 
@@ -13,9 +12,9 @@ export class TooGoodToGoClient {
         });
     }
 
-    public async login(): Promise<void> {
+    public async login(email: string): Promise<void> {
         await this.client
-            .post(`${BASE_AUTH_URL}/authByEmail`, config.get("api.auth"))
+            .post(`${BASE_AUTH_URL}/authByEmail`, { email, device_type: "IOS" })
             .then((resp) => resp.data);
     }
 
