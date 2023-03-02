@@ -13,14 +13,17 @@ export class Db {
         this.tableName = Env.TABLE_NAME;
     }
 
-    public async setPollingId(pollingId: string): Promise<void> {
-        const item = { key: "pollingId", value: pollingId };
-        return this.putItem(item);
-    }
+    public setPollingId = async (pollingId: string): Promise<void> => this.putItem({ key: "pollingId", value: pollingId });
 
-    public async getPollingId(): Promise<string> {
-        return (await this.getItem("pollingId")).value;
-    }
+    public getPollingId = async (): Promise<string> => (await this.getItem("pollingId")).value;
+
+    public setAccessToken = async (accessToken: string): Promise<void> => this.putItem({ key: "accessToken", value: accessToken });
+
+    public getAccessToken = async (): Promise<string> => (await this.getItem("accessToken")).value;
+
+    public setRefreshToken = async (refreshToken: string): Promise<void> => this.putItem({ key: "refreshToken", value: refreshToken });
+
+    public getRefreshToken = async (): Promise<string> => (await this.getItem("refreshToken")).value;
 
     private async getItem(key: string): Promise<Item> {
         const params = {

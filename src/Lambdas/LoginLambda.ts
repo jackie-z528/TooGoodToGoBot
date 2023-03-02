@@ -16,9 +16,15 @@ app.post("/login/:email", async (req: Request, resp: Response) => {
     }
 })
 
-app.post("/login/continue", async (req: Request, resp: Response) => {
+app.post("/login/:email/continue", async (req: Request, resp: Response) => {
     const tgtgClient = new TooGoodToGoClient();
-    tgtgClient.continueLogin();
+    const { email } = req.params;
+    try {
+        await tgtgClient.continueLogin(email);
+        resp.send("Login complete")
+    } catch (err) {
+        resp.send(err)
+    }
 })
 
 module.exports.handler = serverless(app)
