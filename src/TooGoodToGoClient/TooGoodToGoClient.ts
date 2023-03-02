@@ -33,21 +33,21 @@ export class TooGoodToGoClient {
     }
 
     public async login(email: string): Promise<void> {
-        const emailAuthResponse: EmailAuthResponse = JSON.parse(await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { json: { email, device_type: "IOS" } }).json())
+        const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { json: { email, device_type: "IOS" } }).json()
         const { polling_id } = emailAuthResponse;
         return this.db.setPollingId(polling_id);
     }
 
     public async continueLogin(email: string): Promise<void> {
         const polling_id = this.db.getPollingId();
-        const pollAuthResponse: PollAuthResponse = await JSON.parse(await this.client
+        const pollAuthResponse: PollAuthResponse = await this.client
             .post(`${BASE_AUTH_URL}/authByRequestPollingId`, {
                 json: {
                     polling_id,
                     email,
                     device_type: "IOS"
                 }
-            }).json())
+            }).json()
         const { access_token, refresh_token } = pollAuthResponse;
         await Promise.all([this.db.setAccessToken(access_token), this.db.setRefreshToken(refresh_token)])
     }
