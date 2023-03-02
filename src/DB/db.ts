@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import { Env } from "../Env";
-import { throwItemNotFound } from "./error";
+import { throwItemNotFound } from "./Error";
 import { Item } from "./models/Item";
 
 export class Db {
@@ -24,7 +24,7 @@ export class Db {
 
     public getRefreshToken = async (): Promise<string> => (await this.getItem("refreshToken")).value;
 
-    private async getItem(key: string): Promise<Item> {
+    public async getItem(key: string): Promise<Item> {
         const params = {
             TableName: this.tableName,
             Key: {
@@ -32,7 +32,7 @@ export class Db {
             }
         }
         const item = await this.dynamoInstance.get(params).promise().then((item) => item.Item);
-        return item ? item.Item : throwItemNotFound();
+        return item as Item ?? throwItemNotFound();
     }
 
     private async putItem(item: Item): Promise<void> {

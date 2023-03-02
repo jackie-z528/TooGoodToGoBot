@@ -1,31 +1,28 @@
-import serverless from "serverless-http";
-import express, { Express, Request, Response } from "express";
 import { TooGoodToGoClient } from "../TooGoodToGoClient/TooGoodToGoClient";
-import { Env } from "../Env";
+import express from "express";
+import serverless from "serverless-http"
 
-const app: Express = express();
+const app = express();
 
-
-app.post("/login/:email", async (req: Request, resp: Response, next) => {
+app.post("/login/:email", async (req, res, next) => {
     const tgtgClient = new TooGoodToGoClient();
-    const { email } = req.params;
     try {
-        await tgtgClient.login(email);
-        resp.send("Login request sent, send continue request once email is verified");
+        await tgtgClient.login("jackie.zhou0528@gmail.com")
+        res.send("Login request sent")
     } catch (err) {
-        next(err);
+        next(err)
     }
 })
 
-app.post("/login/:email/continue", async (req: Request, resp: Response) => {
+app.post("/login/:email/continue", async (req, res, next) => {
     const tgtgClient = new TooGoodToGoClient();
     const { email } = req.params;
-    await tgtgClient.continueLogin(email);
-    resp.send("Login complete")
+    try {
+        await tgtgClient.continueLogin(email);
+        res.send("Login complete")
+    } catch (err) {
+        next(err)
+    }
 })
 
-app.get("/login", (req, resp) => {
-    resp.send(`${Env.TABLE_NAME} ${Env.AWS_REGION}`)
-})
-
-module.exports.handler = serverless(app)
+export const handler = serverless(app)

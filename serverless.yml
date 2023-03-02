@@ -28,7 +28,7 @@ functions:
     url: true
     events:
       - httpApi: '*'
-
+  
 resources:
   Resources:
     TooGoodToGoBotTable:
