@@ -28,6 +28,10 @@ functions:
     url: true
     events:
       - httpApi: '*'
+  refreshToken:
+    handler: src/Lambdas/RefreshTokenLambda.handler
+    events:
+      - schedule: rate(24 hours)
   
 resources:
   Resources:

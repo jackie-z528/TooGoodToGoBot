@@ -24,6 +24,10 @@ export class Db {
 
     public getRefreshToken = async (): Promise<string> => (await this.getItem("refreshToken")).value;
 
+    public setUserId = async (userId: string): Promise<void> => this.putItem({ key: "userId", value: userId });
+
+    public getUserId = async (): Promise<string> => (await this.getItem("userId")).value;
+
     public async getItem(key: string): Promise<Item> {
         const params = {
             TableName: this.tableName,

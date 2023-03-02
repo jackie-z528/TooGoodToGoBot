@@ -14,4 +14,10 @@ export interface PollAuthRequest extends EmailAuthRequest {
 export interface PollAuthResponse {
     access_token: string,
     refresh_token: string
+    startup_data: { user: { user_id: string } }
+}
+
+export interface RefreshResponse {
+    access_token: string,
+    refresh_token: string
 }

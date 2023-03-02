@@ -6,8 +6,9 @@ const app = express();
 
 app.post("/login/:email", async (req, res, next) => {
     const tgtgClient = new TooGoodToGoClient();
+    const { email } = req.params;
     try {
-        await tgtgClient.login("jackie.zhou0528@gmail.com")
+        await tgtgClient.login(email)
         res.send("Login request sent")
     } catch (err) {
         next(err)
@@ -24,5 +25,15 @@ app.post("/login/:email/continue", async (req, res, next) => {
         next(err)
     }
 })
+
+app.post("/refresh", async (req, res, next) => {
+    const tgtgClient = new TooGoodToGoClient();
+    try {
+        await tgtgClient.refreshToken();
+        res.send("Access token refreshed");
+    } catch (err) {
+        next(err)
+    }
+});
 
 export const handler = serverless(app)
