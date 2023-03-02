@@ -9,6 +9,7 @@ provider:
   runtime: nodejs16.x
   environment:
     TABLE_NAME: ${param:tableName}
+    REGION: ${param:awsRegion}
   iamRoleStatements:
     - Effect: Allow
       Action:

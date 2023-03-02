@@ -3,7 +3,7 @@ import { CookieJar } from "tough-cookie";
 import { Db } from "../DB/db";
 import { EmailAuthResponse, PollAuthResponse } from "./models/Auth";
 
-const BASE_AUTH_URL = "/auth/v3";
+const BASE_AUTH_URL = "auth/v3";
 
 export class TooGoodToGoClient {
     private client: Got;

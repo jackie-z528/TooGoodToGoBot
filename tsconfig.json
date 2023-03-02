@@ -2,8 +2,7 @@
     "extends": "@tsconfig/node16/tsconfig.json",
     "compilerOptions": {
         "outDir": "./build",
-        "resolveJsonModule": true,
-        "module": "ESNext"
+        "strict": true
     },
     "include": [
         "src/**/*"

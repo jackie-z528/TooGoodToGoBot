@@ -1,5 +1,4 @@
 import AWS from "aws-sdk";
-import { AttributeMap } from "aws-sdk/clients/dynamodb";
 import { Env } from "../Env";
 import { throwItemNotFound } from "./error";
 import { Item } from "./models/Item";
