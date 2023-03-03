@@ -10,25 +10,11 @@ const BASE_AUTH_URL = "auth/v3";
 const BASE_URL = "https://apptoogoodtogo.com/api/"
 
 export class TooGoodToGoClient {
-    private client: AxiosInstance;
-    private gotClient: Got;
+    private client: Got;
     private db: Db;
 
     constructor() {
-        this.client = wrapper(axios.create({
-            jar: new CookieJar(), baseURL: BASE_URL,
-            headers: {
-                "User-Agent":
-                    "TooGoodToGo/21.9.0 (813) (iPhone/iPhone 7 (GSM); iOS 15.1; Scale/2.00)",
-                "Content-Type": "application/json",
-                Accept: "",
-                "Accept-Language": "en-US",
-                "Accept-Encoding": "gzip",
-            }
-        }))
-
-        // Got complains when called in serverless server, but is useful to appear more human like in captcha sensitive requests
-        this.gotClient = gotScraping.extend({
+        this.client = gotScraping.extend({
             prefixUrl: "https://apptoogoodtogo.com/api/",
         })
 
@@ -37,7 +23,7 @@ export class TooGoodToGoClient {
 
     public async login(email: string): Promise<void> {
         // const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { email, device_type: "IOS" }).then((resp) => resp.data);
-        const emailAuthResponse: EmailAuthResponse = await this.gotClient.post(`${BASE_AUTH_URL}/authByEmail`, { json: { email, device_type: "IOS" } }).json();
+        const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { json: { email, device_type: "IOS" } }).json();
         const { polling_id } = emailAuthResponse;
         return this.db.setPollingId(polling_id);
     }
@@ -46,10 +32,12 @@ export class TooGoodToGoClient {
         const polling_id = await this.db.getPollingId();
         const pollAuthResponse: PollAuthResponse = await this.client
             .post(`${BASE_AUTH_URL}/authByRequestPollingId`, {
-                request_polling_id: polling_id,
-                email,
-                device_type: "IOS"
-            }).then((resp) => resp.data);
+                json: {
+                    request_polling_id: polling_id,
+                    email,
+                    device_type: "IOS"
+                }
+            }).json();
         const { access_token, refresh_token } = pollAuthResponse;
         const { user_id } = pollAuthResponse.startup_data.user;
         await Promise.all([this.db.setAccessToken(access_token), this.db.setRefreshToken(refresh_token), this.db.setUserId(user_id)])
@@ -59,7 +47,7 @@ export class TooGoodToGoClient {
         const refreshToken = await this.db.getRefreshToken();
         let refreshResponse: RefreshResponse;
         try {
-            refreshResponse = await this.gotClient.post(`${BASE_AUTH_URL}/token/refresh`, { json: { refresh_token: refreshToken } }).json();
+            refreshResponse = await this.client.post(`${BASE_AUTH_URL}/token/refresh`, { json: { refresh_token: refreshToken } }).json();
         } catch (err) {
             console.error(err);
             throw err;
@@ -72,15 +60,20 @@ export class TooGoodToGoClient {
     public async getFavorites(): Promise<BucketItem[]> {
         const accessToken = await this.db.getAccessToken();
         const userId = await this.db.getUserId();
-        const bucketResponse: BucketResponse = await this.client.post(`item/v8/`, {
-            favorites_only: true,
-            user_id: userId,
-            origin: {
-                latitude: 0,
-                longitude: 0
+        const bucketResponse: BucketResponse = await this.client.post("item/v8", {
+            json: {
+                favorites_only: true,
+                user_id: userId,
+                origin: {
+                    latitude: 0,
+                    longitude: 0
+                },
+                radius: 1
             },
-            radius: 1
-        }, { headers: { Authorization: `Bearer ${accessToken}` } }).then(resp => resp.data);
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        }).json();
         return bucketResponse.items;
     }
 }
