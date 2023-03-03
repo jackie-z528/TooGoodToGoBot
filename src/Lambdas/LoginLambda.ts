@@ -26,14 +26,4 @@ app.post("/login/:email/continue", async (req, res, next) => {
     }
 })
 
-app.post("/refresh", async (req, res, next) => {
-    const tgtgClient = new TooGoodToGoClient();
-    try {
-        await tgtgClient.refreshToken();
-        res.send("Access token refreshed");
-    } catch (err) {
-        next(err)
-    }
-});
-
 export const handler = serverless(app)

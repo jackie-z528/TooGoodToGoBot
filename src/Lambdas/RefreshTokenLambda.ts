@@ -1,10 +1,6 @@
 import { TooGoodToGoClient } from "../TooGoodToGoClient/TooGoodToGoClient"
 
-export const handler = async () => {
+module.exports.handler = async () => {
     const tgtgClient = new TooGoodToGoClient();
-    try {
-        await tgtgClient.refreshToken();
-    } catch (err) {
-        console.log(err)
-    }
+    await tgtgClient.refreshToken();
 }

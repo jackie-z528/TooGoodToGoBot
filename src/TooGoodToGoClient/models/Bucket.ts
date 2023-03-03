@@ -8,10 +8,9 @@ export interface BucketItem {
         },
         cover_picture: Image,
         logo_picture: Image,
-        display_name: string,
-        items_available: number,
-        new_item: boolean
-    }
+    },
+    display_name: string,
+    items_available: number,
 }
 
 export interface Image {
@@ -19,7 +18,5 @@ export interface Image {
 }
 
 export interface BucketResponse {
-    mobile_bucket: {
         items: BucketItem[],
-    }
 }

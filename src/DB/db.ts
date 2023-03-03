@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { BatchGetRequestMap, BatchWriteItemRequestMap, AttributeValue, PutItemInputAttributeMap } from "aws-sdk/clients/dynamodb";
 import { Env } from "../Env";
 import { throwItemNotFound } from "./Error";
 import { Item } from "./models/Item";
@@ -47,4 +48,22 @@ export class Db {
         await this.dynamoInstance.put(params).promise()
     }
 
+    public async getItems(keys: string[]): Promise<Item[]> {
+        const keysObject = keys.map((key) => ({ "key": key as AttributeValue }));
+        const RequestItems: BatchGetRequestMap = {}
+        RequestItems[this.tableName] = { Keys: keysObject };
+        const output = await this.dynamoInstance.batchGet({ RequestItems }).promise();
+        if (!output.Responses) {
+            return throwItemNotFound()
+        }
+
+        return output.Responses[this.tableName] as Item[];
+    }
+
+    public async putItems(items: Item[]): Promise<void> {
+        const RequestItems: BatchWriteItemRequestMap = {};
+        const writeRequests = items.map((item) => ({ PutRequest: { Item: item as unknown as PutItemInputAttributeMap } }));
+        RequestItems[this.tableName] = writeRequests;
+        await this.dynamoInstance.batchWrite({ RequestItems }).promise()
+    }
 }
