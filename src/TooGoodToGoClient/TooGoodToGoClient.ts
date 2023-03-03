@@ -1,13 +1,14 @@
-import { CookieJar } from "tough-cookie";
 import { Db } from "../DB/db";
-import { EmailAuthResponse, PollAuthResponse, RefreshResponse } from "./models/Auth";
-import axios, { AxiosInstance } from "axios";
-import { wrapper } from "axios-cookiejar-support"
+import {
+    EmailAuthResponse,
+    PollAuthResponse,
+    RefreshResponse,
+} from "./models/Auth";
 import { BucketItem, BucketResponse } from "./models/Bucket";
 import { gotScraping, Got } from "got-scraping";
 
 const BASE_AUTH_URL = "auth/v3";
-const BASE_URL = "https://apptoogoodtogo.com/api/"
+const BASE_URL = "https://apptoogoodtogo.com/api/";
 
 export class TooGoodToGoClient {
     private client: Got;
@@ -15,15 +16,19 @@ export class TooGoodToGoClient {
 
     constructor() {
         this.client = gotScraping.extend({
-            prefixUrl: "https://apptoogoodtogo.com/api/",
-        })
+            prefixUrl: BASE_URL,
+        });
 
         this.db = new Db();
     }
 
     public async login(email: string): Promise<void> {
         // const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { email, device_type: "IOS" }).then((resp) => resp.data);
-        const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { json: { email, device_type: "IOS" } }).json();
+        const emailAuthResponse: EmailAuthResponse = await this.client
+            .post(`${BASE_AUTH_URL}/authByEmail`, {
+                json: { email, device_type: "IOS" },
+            })
+            .json();
         const { polling_id } = emailAuthResponse;
         return this.db.setPollingId(polling_id);
     }
@@ -35,45 +40,59 @@ export class TooGoodToGoClient {
                 json: {
                     request_polling_id: polling_id,
                     email,
-                    device_type: "IOS"
-                }
-            }).json();
+                    device_type: "IOS",
+                },
+            })
+            .json();
         const { access_token, refresh_token } = pollAuthResponse;
         const { user_id } = pollAuthResponse.startup_data.user;
-        await Promise.all([this.db.setAccessToken(access_token), this.db.setRefreshToken(refresh_token), this.db.setUserId(user_id)])
+        await Promise.all([
+            this.db.setAccessToken(access_token),
+            this.db.setRefreshToken(refresh_token),
+            this.db.setUserId(user_id),
+        ]);
     }
 
     public async refreshToken(): Promise<void> {
         const refreshToken = await this.db.getRefreshToken();
         let refreshResponse: RefreshResponse;
         try {
-            refreshResponse = await this.client.post(`${BASE_AUTH_URL}/token/refresh`, { json: { refresh_token: refreshToken } }).json();
+            refreshResponse = await this.client
+                .post(`${BASE_AUTH_URL}/token/refresh`, {
+                    json: { refresh_token: refreshToken },
+                })
+                .json();
         } catch (err) {
             console.error(err);
             throw err;
         }
         console.log(refreshResponse);
         const { access_token, refresh_token } = refreshResponse;
-        await Promise.all([this.db.setAccessToken(access_token), this.db.setRefreshToken(refresh_token)]);
+        await Promise.all([
+            this.db.setAccessToken(access_token),
+            this.db.setRefreshToken(refresh_token),
+        ]);
     }
 
     public async getFavorites(): Promise<BucketItem[]> {
         const accessToken = await this.db.getAccessToken();
         const userId = await this.db.getUserId();
-        const bucketResponse: BucketResponse = await this.client.post("item/v8", {
-            json: {
-                favorites_only: true,
-                user_id: userId,
-                origin: {
-                    latitude: 0,
-                    longitude: 0
+        const bucketResponse: BucketResponse = await this.client
+            .post("item/v8", {
+                json: {
+                    favorites_only: true,
+                    user_id: userId,
+                    origin: {
+                        latitude: 0,
+                        longitude: 0,
+                    },
+                    radius: 1,
                 },
-                radius: 1
-            },
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        }).json();
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .json();
         return bucketResponse.items;
     }
 }
