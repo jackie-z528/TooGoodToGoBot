@@ -23,7 +23,6 @@ export class TooGoodToGoClient {
     }
 
     public async login(email: string): Promise<void> {
-        // const emailAuthResponse: EmailAuthResponse = await this.client.post(`${BASE_AUTH_URL}/authByEmail`, { email, device_type: "IOS" }).then((resp) => resp.data);
         const emailAuthResponse: EmailAuthResponse = await this.client
             .post(`${BASE_AUTH_URL}/authByEmail`, {
                 json: { email, device_type: "IOS" },
