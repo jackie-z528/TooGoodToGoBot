@@ -43,7 +43,7 @@ export class Db {
     (await this.getItem("userId")).value;
 
   public getSubscribedChannels = async (): Promise<string[]> =>
-    (await this.getItem("subscribedChannels")).valueList ?? [];
+    (await this.getItem("subscribedChannels")).valueList?.values ?? [];
 
   private getItem = async (key: string): Promise<Item> => {
     const params = {

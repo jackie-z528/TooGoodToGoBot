@@ -31,9 +31,12 @@ functions:
       - httpApi: '*'
   refreshToken:
     handler: src/Lambdas/RefreshTokenLambda.handler
-    url: true
     events:
       - schedule: rate(24 hours)
+  pollFavorites:
+    handler: src/Lambdas/PollLambda.handler
+    events:
+      - schedule: rate(30 seconds)
 resources:
   Resources:
     TooGoodToGoBotTable:

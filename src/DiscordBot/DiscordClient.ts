@@ -1,35 +1,29 @@
 import {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  TextChannel,
+    Client,
+    GatewayIntentBits,
+    EmbedBuilder,
+    TextChannel,
+    APIEmbed
 } from "discord.js";
 import { Env } from "../Env";
 import * as _ from "lodash";
 
 export class DiscordClient {
-  private client: Client;
-  constructor() {
-    this.client = new Client({ intents: [GatewayIntentBits.Guilds] });
-  }
+    private client: Client;
+    constructor() {
+        this.client = new Client({ intents: [GatewayIntentBits.Guilds] });
+    }
 
-  public async login() {
-    return this.client.login(Env.DISCORD_TOKEN);
-  }
+    public async login() {
+        return this.client.login();
+    }
 
-  public async logout() {
-    return this.client.destroy();
-  }
+    public async logout() {
+        return this.client.destroy();
+    }
 
-  public async sendEmbeds(embeds: EmbedBuilder[], channelIds: string[]) {
-    const channelsPromise = channelIds.map((id) =>
-      this.client.channels.fetch(id)
-    );
-    const channels = await Promise.all(channelsPromise);
-    const sendableChannels = _.chain(channels)
-      .compact()
-      .filter("send")
-      .value() as unknown as TextChannel[];
-    sendableChannels.forEach((channel) => channel.send({ embeds }));
-  }
+    public async sendEmbeds(embeds: EmbedBuilder[], channelId: string) {
+        const channel = await this.client.channels.fetch(channelId) as unknown as TextChannel;
+        await Promise.all(embeds.map((embed) => channel.send({ embeds: [embed] })));
+    }
 }
