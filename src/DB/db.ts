@@ -76,7 +76,7 @@ export class Db {
       .promise();
 
     if (!output.Responses) {
-      return []
+      return [];
     }
 
     return output.Responses[this.tableName] as Item[];
