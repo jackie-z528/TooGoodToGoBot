@@ -24,6 +24,7 @@ export class DiscordClient {
 
     public async sendEmbeds(embeds: EmbedBuilder[], channelId: string) {
         const channel = await this.client.channels.fetch(channelId) as unknown as TextChannel;
-        await Promise.all(embeds.map((embed) => channel.send({ embeds: [embed] })));
+        const chunkedEmbeds = _.chunk(embeds, 10);
+        await Promise.all(chunkedEmbeds.map((embed) => channel.send({ embeds: embed })));
     }
 }
