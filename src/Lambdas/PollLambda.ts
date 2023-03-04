@@ -14,3 +14,5 @@ export const handler = async () => {
     await Promise.all(channelIds.map((id) => discordClient.sendEmbeds(embeds, id)));
     discordClient.logout();
 };
+
+handler();

@@ -3,7 +3,6 @@ import {
     GatewayIntentBits,
     EmbedBuilder,
     TextChannel,
-    APIEmbed
 } from "discord.js";
 import { Env } from "../Env";
 import * as _ from "lodash";
@@ -15,7 +14,7 @@ export class DiscordClient {
     }
 
     public async login() {
-        return this.client.login();
+        return this.client.login(Env.DISCORD_TOKEN);
     }
 
     public async logout() {
