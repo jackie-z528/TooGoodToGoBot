@@ -10,6 +10,7 @@ provider:
   environment:
     TABLE_NAME: ${param:tableName}
     REGION: ${param:awsRegion}
+    DISCORD_TOKEN: ${param:discordToken}
   iamRoleStatements:
     - Effect: Allow
       Action:
